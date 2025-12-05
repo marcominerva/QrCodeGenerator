@@ -4,9 +4,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Net.Http.Headers;
 using QRCoder;
-using Scalar.AspNetCore;
 using TinyHelpers.AspNetCore.Extensions;
-using TinyHelpers.AspNetCore.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,13 +57,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddOpenApi(options =>
-{
-    options.RemoveServerList();
-    options.AddDefaultProblemDetailsResponse();
-    options.DescribeAllParametersInCamelCase();
-});
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -79,14 +70,6 @@ app.UseHttpsRedirection();
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
-
-app.MapOpenApi();
-
-app.MapScalarApiReference();
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/openapi/v1.json", "QrCodeGenerator API V1");
-});
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
