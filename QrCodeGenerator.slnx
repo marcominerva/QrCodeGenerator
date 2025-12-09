@@ -5,5 +5,5 @@
     <File Path="Directory.Build.props" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="QrCodeGenerator/QrCodeGenerator.csproj" />
+  <Project Path="src/QrCodeGenerator/QrCodeGenerator.csproj" />
 </Solution>

@@ -16,7 +16,7 @@ builder.Services.AddRateLimiter(options =>
         return RateLimitPartition.GetFixedWindowLimiter(context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ =>
             new()
             {
-                PermitLimit = 50,
+                PermitLimit = 100,
                 Window = TimeSpan.FromMinutes(1),
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                 QueueLimit = 0
@@ -41,7 +41,7 @@ builder.Services.AddOutputCache(options =>
 {
     options.AddPolicy("QrCodeGenerationCachePolicy", policy =>
     {
-        policy.Expire(TimeSpan.FromHours(1));
+        policy.Expire(TimeSpan.FromHours(24));
     });
 });
 
