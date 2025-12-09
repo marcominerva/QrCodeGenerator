@@ -155,7 +155,7 @@
         <div class="input-wrapper">
             <div class="input-group input-group-lg mb-3">
                 <span class="input-group-text">
-                    <i class="bi bi-pencil-fill"></i>
+                    <i class="bi bi-pencil-fill" aria-hidden="true"></i>
                 </span>
                 <input type="text" 
                        class="form-control" 
@@ -168,7 +168,7 @@
                         type="button" 
                         id="generateBtn"
                         disabled>
-                    <i class="bi bi-qr-code me-2"></i>Generate QR Code
+                    <i class="bi bi-qr-code me-2" aria-hidden="true"></i>Generate QR Code
                 </button>
             </div>
         </div>
@@ -183,7 +183,7 @@
             <!-- Download Button -->
             <div class="text-center mb-4">
                 <button class="btn btn-success btn-lg" id="downloadBtn">
-                    <i class="bi bi-download me-2"></i>Download QR Code
+                    <i class="bi bi-download me-2" aria-hidden="true"></i>Download QR Code
                 </button>
             </div>
 
@@ -191,11 +191,11 @@
             <div class="card">
                 <div class="card-body">
                     <label for="endpointUri" class="form-label">
-                        <i class="bi bi-link-45deg me-2"></i>Endpoint URI:
+                        <i class="bi bi-link-45deg me-2" aria-hidden="true"></i>Endpoint URI:
                     </label>
                     <div class="input-group">
                         <span class="input-group-text">
-                            <i class="bi bi-globe"></i>
+                            <i class="bi bi-globe" aria-hidden="true"></i>
                         </span>
                         <input type="text" 
                                class="form-control uri-display" 
@@ -204,12 +204,13 @@
                                aria-label="Endpoint URI">
                         <button class="btn btn-outline-secondary" 
                                 type="button" 
-                                id="copyUriBtn">
-                            <i class="bi bi-clipboard me-1"></i>Copy
+                                id="copyUriBtn"
+                                aria-label="Copy URI to clipboard">
+                            <i class="bi bi-clipboard me-1" aria-hidden="true"></i>Copy
                         </button>
                     </div>
                     <small class="text-muted d-block mt-2">
-                        <i class="bi bi-info-circle me-1"></i>Use this URL to generate the QR code directly
+                        <i class="bi bi-info-circle me-1" aria-hidden="true"></i>Use this URL to generate the QR code directly
                     </small>
                 </div>
             </div>
@@ -324,16 +325,27 @@
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     await navigator.clipboard.writeText(uri);
                     
-                    // Visual feedback - preserve icon in button
+                    // Visual feedback - preserve icon in button using DOM manipulation
                     const originalHTML = copyUriBtn.innerHTML;
-                    copyUriBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Copied!';
+                    
+                    // Clear button and create new elements safely
+                    copyUriBtn.innerHTML = '';
+                    const icon = document.createElement('i');
+                    icon.className = 'bi bi-check-circle me-1';
+                    icon.setAttribute('aria-hidden', 'true');
+                    const text = document.createTextNode('Copied!');
+                    
+                    copyUriBtn.appendChild(icon);
+                    copyUriBtn.appendChild(text);
                     copyUriBtn.classList.add('btn-success');
                     copyUriBtn.classList.remove('btn-outline-secondary');
+                    copyUriBtn.setAttribute('aria-label', 'URI copied to clipboard');
                     
                     setTimeout(() => {
                         copyUriBtn.innerHTML = originalHTML;
                         copyUriBtn.classList.remove('btn-success');
                         copyUriBtn.classList.add('btn-outline-secondary');
+                        copyUriBtn.setAttribute('aria-label', 'Copy URI to clipboard');
                     }, 2000);
                 } else {
                     // Fallback for older browsers
