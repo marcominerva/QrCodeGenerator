@@ -328,8 +328,8 @@
                     // Visual feedback - preserve icon in button using DOM manipulation
                     const originalHTML = copyUriBtn.innerHTML;
                     
-                    // Clear button and create new elements safely
-                    copyUriBtn.innerHTML = '';
+                    // Clear button content safely
+                    copyUriBtn.textContent = '';
                     const icon = document.createElement('i');
                     icon.className = 'bi bi-check-circle me-1';
                     icon.setAttribute('aria-hidden', 'true');
