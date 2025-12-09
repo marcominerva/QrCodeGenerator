@@ -1,10 +1,260 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>QR Code Generator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        /* Minimal styling inspired by Google Home Page */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+        }
+        .logo {
+            font-size: 3rem;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #202124;
+        }
+        .input-wrapper {
+            margin-bottom: 2rem;
+        }
+        #qrCodeImage {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 2rem auto;
+        }
+        .qr-result {
+            display: none;
+            margin-top: 2rem;
+        }
+        .btn-generate {
+            padding: 0.5rem 2rem;
+        }
+        .uri-display {
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <p>Up and runnig</p>
+    <div class="container">
+        <!-- Logo/Title -->
+        <h1 class="logo">QR Code Generator</h1>
+        
+        <!-- Input Section -->
+        <div class="input-wrapper">
+            <div class="input-group input-group-lg">
+                <input type="text" 
+                       class="form-control" 
+                       id="contentInput" 
+                       placeholder="Enter text to encode" 
+                       aria-label="Content to encode">
+                <button class="btn btn-primary btn-generate" 
+                        type="button" 
+                        id="generateBtn">
+                    Generate QR Code
+                </button>
+            </div>
+        </div>
+
+        <!-- QR Code Result Section -->
+        <div class="qr-result" id="qrResultSection">
+            <!-- QR Code Image -->
+            <div class="text-center">
+                <img id="qrCodeImage" alt="Generated QR Code" />
+            </div>
+
+            <!-- Download Button -->
+            <div class="text-center mb-4">
+                <button class="btn btn-success" id="downloadBtn">
+                    Download QR Code
+                </button>
+            </div>
+
+            <!-- Endpoint URI Section -->
+            <div class="card">
+                <div class="card-body">
+                    <label for="endpointUri" class="form-label">Endpoint URI:</label>
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control uri-display" 
+                               id="endpointUri" 
+                               readonly 
+                               aria-label="Endpoint URI">
+                        <button class="btn btn-outline-secondary" 
+                                type="button" 
+                                id="copyUriBtn">
+                            Copy
+                        </button>
+                    </div>
+                    <small class="text-muted">Use this URL to generate the QR code directly</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+    <script>
+        // DOM element references
+        const contentInput = document.getElementById('contentInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const qrResultSection = document.getElementById('qrResultSection');
+        const qrCodeImage = document.getElementById('qrCodeImage');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const endpointUri = document.getElementById('endpointUri');
+        const copyUriBtn = document.getElementById('copyUriBtn');
+
+        // Configuration
+        const API_ENDPOINT = '/qrcode';
+        const DEFAULT_SIZE = 5;
+        const DEFAULT_DRAW_BORDER = true;
+
+        /**
+         * Builds the complete QR code generation URL with query parameters
+         * @param {string} content - The text content to encode
+         * @returns {string} The complete URL
+         */
+        function buildQrCodeUrl(content) {
+            const params = new URLSearchParams({
+                Content: content,
+                Size: DEFAULT_SIZE,
+                DrawBorder: DEFAULT_DRAW_BORDER
+            });
+            
+            // Get the current origin (protocol + host + port)
+            const baseUrl = window.location.origin;
+            return `${baseUrl}${API_ENDPOINT}?${params.toString()}`;
+        }
+
+        /**
+         * Generates and displays the QR code
+         */
+        function generateQrCode() {
+            const content = contentInput.value.trim();
+            
+            // Validate input
+            if (!content) {
+                alert('Please enter text to encode');
+                return;
+            }
+
+            // Build the URL
+            const qrCodeUrl = buildQrCodeUrl(content);
+            
+            // Update the image source
+            qrCodeImage.src = qrCodeUrl;
+            
+            // Update the endpoint URI display
+            endpointUri.value = qrCodeUrl;
+            
+            // Show the result section
+            qrResultSection.style.display = 'block';
+        }
+
+        /**
+         * Downloads the QR code as a PNG file
+         */
+        async function downloadQrCode() {
+            try {
+                const qrCodeUrl = qrCodeImage.src;
+                
+                // Fetch the image as a blob
+                const response = await fetch(qrCodeUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch QR code');
+                }
+                
+                const blob = await response.blob();
+                
+                // Create a download link
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = 'qrcode.png';
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Clean up
+                window.URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+                console.error('Error downloading QR code:', error);
+                alert('Failed to download QR code. Please try again.');
+            }
+        }
+
+        /**
+         * Copies the endpoint URI to the clipboard
+         */
+        async function copyUriToClipboard() {
+            try {
+                const uri = endpointUri.value;
+                
+                // Use the modern Clipboard API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(uri);
+                    
+                    // Visual feedback
+                    const originalText = copyUriBtn.textContent;
+                    copyUriBtn.textContent = 'Copied!';
+                    copyUriBtn.classList.add('btn-success');
+                    copyUriBtn.classList.remove('btn-outline-secondary');
+                    
+                    setTimeout(() => {
+                        copyUriBtn.textContent = originalText;
+                        copyUriBtn.classList.remove('btn-success');
+                        copyUriBtn.classList.add('btn-outline-secondary');
+                    }, 2000);
+                } else {
+                    // Fallback for older browsers
+                    endpointUri.select();
+                    document.execCommand('copy');
+                    alert('URI copied to clipboard!');
+                }
+            } catch (error) {
+                console.error('Error copying URI:', error);
+                alert('Failed to copy URI. Please copy it manually.');
+            }
+        }
+
+        // Event listeners
+        generateBtn.addEventListener('click', generateQrCode);
+        
+        // Allow Enter key to generate QR code
+        contentInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                generateQrCode();
+            }
+        });
+        
+        downloadBtn.addEventListener('click', downloadQrCode);
+        copyUriBtn.addEventListener('click', copyUriToClipboard);
+
+        // Handle image load errors
+        qrCodeImage.addEventListener('error', () => {
+            console.error('Failed to load QR code image');
+            alert('Failed to generate QR code. Please try again.');
+        });
+    </script>
 </body>
 </html>
