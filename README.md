@@ -17,7 +17,7 @@ QR Code Generator is a lightweight ASP.NET Core application that provides both a
 
 ## Screenshot
 
-![QR Code Generator Interface](https://github.com/user-attachments/assets/99ffbd21-8453-43ff-88ab-3479c8f43a8c)
+![QR Code Generator Interface](https://github.com/user-attachments/assets/0493583d-0dbc-4d8a-a3ce-6c9a21f6d225)
 
 ## Try It Live
 
