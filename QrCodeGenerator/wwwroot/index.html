@@ -100,14 +100,57 @@
             opacity: 0.4;
             cursor: not-allowed;
         }
+
+        .alert {
+            margin-top: 1.5rem;
+        }
+
+        .github-link {
+            position: absolute;
+            top: 0.5rem;
+            right: 2rem;
+            color: black;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .github-link:hover {
+            opacity: 0.7;
+            color: black;
+        }
+
+        .github-link i {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .github-link {
+                position: absolute;
+                top: 0.5rem;
+                right: 1rem;
+            }
+
+            .github-link span {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
+    <a href="https://github.com/marcominerva/QrCodeGenerator" target="_blank" class="github-link">
+        <i class="bi bi-github"></i>
+        <span>View on GitHub</span>
+    </a>
+    
     <div class="container">
         <div class="main-container">
             <h1><i class="bi bi-qr-code"></i> QR Code Generator</h1>
             
-            <div class="mb-4">
+            <div class="mb-3">
                 <div class="input-group input-group-lg">
                     <span class="input-group-text">
                         <i class="bi bi-pencil-fill"></i>
@@ -120,15 +163,35 @@
                 </div>
             </div>
 
-            <div class="text-center">
-                <button type="button" 
-                        class="btn btn-primary btn-lg" 
-                        id="generateBtn"
-                        disabled>
-                    <i class="bi bi-qr-code-scan"></i>
-                    <span id="generateBtnText">Generate QR Code</span>
-                    <span id="generateBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                </button>
+            <div class="row mb-3 g-3 align-items-end">
+                <div class="col-auto">
+                    <label for="sizeInput" class="form-label mb-0 me-2">Size</label>
+                    <input type="number" 
+                           class="form-control d-inline-block" 
+                           id="sizeInput" 
+                           min="1" 
+                           max="100" 
+                           value="3"
+                           style="width: 80px;">
+                </div>
+                <div class="col-auto">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="drawBorderCheck" checked>
+                        <label class="form-check-label" for="drawBorderCheck">
+                            Draw border
+                        </label>
+                    </div>
+                </div>
+                <div class="col text-end">
+                    <button type="button" 
+                            class="btn btn-primary" 
+                            id="generateBtn"
+                            disabled>
+                        <i class="bi bi-qr-code-scan"></i>
+                        <span id="generateBtnText">Generate</span>
+                        <span id="generateBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                </div>
             </div>
 
             <div id="alertSection"></div>
@@ -165,6 +228,8 @@
                     </div>
                 </div>
             </div>
+
+            
         </div>
     </div>
 
@@ -172,6 +237,8 @@
     
     <script>
         const contentInput = document.getElementById('contentInput');
+        const sizeInput = document.getElementById('sizeInput');
+        const drawBorderCheck = document.getElementById('drawBorderCheck');
         const generateBtn = document.getElementById('generateBtn');
         const generateBtnText = document.getElementById('generateBtnText');
         const generateBtnSpinner = document.getElementById('generateBtnSpinner');
@@ -222,6 +289,8 @@
 
         function generateQRCode() {
             const content = contentInput.value.trim();
+            const size = parseInt(sizeInput.value);
+            const drawBorder = drawBorderCheck.checked;
 
             generateBtn.disabled = true;
             generateBtnText.textContent = 'Generating...';
@@ -231,8 +300,8 @@
             const baseUrl = window.location.origin;
             const params = new URLSearchParams({
                 content: content,
-                size: 3,
-                drawBorder: true
+                size: size,
+                drawBorder: drawBorder
             });
             const uri = `${baseUrl}/qrcode?${params.toString()}`;
 
@@ -242,7 +311,7 @@
             qrCodeImage.onload = () => {
                 const hasContent = contentInput.value.trim().length > 0;
                 generateBtn.disabled = !hasContent;
-                generateBtnText.textContent = 'Generate QR Code';
+                generateBtnText.textContent = 'Generate';
                 generateBtnSpinner.classList.add('d-none');
 
                 resultSection.classList.add('show');
@@ -251,7 +320,7 @@
             qrCodeImage.onerror = () => {
                 const hasContent = contentInput.value.trim().length > 0;
                 generateBtn.disabled = !hasContent;
-                generateBtnText.textContent = 'Generate QR Code';
+                generateBtnText.textContent = 'Generate';
                 generateBtnSpinner.classList.add('d-none');
 
                 showAlert('Failed to generate QR Code. Please try again.', 'danger');
@@ -278,4 +347,4 @@
         }
     </script>
 </body>
-</html></html>
+</html>
