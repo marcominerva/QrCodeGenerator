@@ -324,14 +324,14 @@
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     await navigator.clipboard.writeText(uri);
                     
-                    // Visual feedback
-                    const originalText = copyUriBtn.textContent;
-                    copyUriBtn.textContent = 'Copied!';
+                    // Visual feedback - preserve icon in button
+                    const originalHTML = copyUriBtn.innerHTML;
+                    copyUriBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Copied!';
                     copyUriBtn.classList.add('btn-success');
                     copyUriBtn.classList.remove('btn-outline-secondary');
                     
                     setTimeout(() => {
-                        copyUriBtn.textContent = originalText;
+                        copyUriBtn.innerHTML = originalHTML;
                         copyUriBtn.classList.remove('btn-success');
                         copyUriBtn.classList.add('btn-outline-secondary');
                     }, 2000);
