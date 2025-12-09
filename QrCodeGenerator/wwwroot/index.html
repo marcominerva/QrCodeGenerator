@@ -1,10 +1,355 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>QR Code Generator</title>
+    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 2.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .input-group-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        .form-control-lg {
+            border: 2px solid #e0e0e0;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-lg:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-gradient:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+        }
+
+        .btn-gradient:active {
+            transform: translateY(0);
+        }
+
+        .btn-gradient:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline-gradient {
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-gradient:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        #resultSection {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        #resultSection.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .qr-code-container {
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        #qrCodeImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #downloadBtn {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
+        }
+
+        #downloadBtn i {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .uri-section {
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .uri-label {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15rem;
+        }
+
+        .input-group-text i {
+            font-size: 1.1rem;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .alert {
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <p>Up and runnig</p>
+    <div class="container">
+        <div class="main-container">
+            <h1><i class="bi bi-qr-code"></i> QR Code Generator</h1>
+            
+            <div class="mb-4">
+                <label for="contentInput" class="form-label fw-semibold">Enter Text to Encode</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text">
+                        <i class="bi bi-pencil-fill"></i>
+                    </span>
+                    <input type="text" 
+                           class="form-control form-control-lg" 
+                           id="contentInput" 
+                           placeholder="Enter your text here..."
+                           autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="button" 
+                        class="btn btn-gradient btn-lg" 
+                        id="generateBtn"
+                        disabled>
+                    <i class="bi bi-qr-code-scan"></i>
+                    <span id="generateBtnText">Generate QR Code</span>
+                    <span id="generateBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </div>
+
+            <div id="alertSection"></div>
+
+            <div id="resultSection" class="mt-4">
+                <div class="qr-code-container">
+                    <img id="qrCodeImage" src="" alt="QR Code" />
+                    <button type="button" 
+                            class="btn btn-gradient" 
+                            id="downloadBtn"
+                            title="Download QR Code">
+                        <i class="bi bi-download"></i>
+                    </button>
+                </div>
+
+                <div class="uri-section">
+                    <div class="uri-label">
+                        <i class="bi bi-globe"></i> Endpoint URI
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-link-45deg"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control" 
+                               id="endpointUri" 
+                               readonly />
+                        <button type="button" 
+                                class="btn btn-outline-gradient" 
+                                id="copyBtn">
+                            <i class="bi bi-clipboard"></i>
+                            <span id="copyBtnText">Copy</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const contentInput = document.getElementById('contentInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const generateBtnText = document.getElementById('generateBtnText');
+        const generateBtnSpinner = document.getElementById('generateBtnSpinner');
+        const resultSection = document.getElementById('resultSection');
+        const qrCodeImage = document.getElementById('qrCodeImage');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const endpointUri = document.getElementById('endpointUri');
+        const copyBtn = document.getElementById('copyBtn');
+        const copyBtnText = document.getElementById('copyBtnText');
+        const alertSection = document.getElementById('alertSection');
+
+        contentInput.addEventListener('input', () => {
+            const hasContent = contentInput.value.trim().length > 0;
+            generateBtn.disabled = !hasContent;
+        });
+
+        generateBtn.addEventListener('click', generateQRCode);
+
+        contentInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !generateBtn.disabled) {
+                generateQRCode();
+            }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = qrCodeImage.src;
+            link.download = 'qrcode.png';
+            link.click();
+        });
+
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(endpointUri.value);
+                showAlert('URI copied to clipboard!', 'success');
+                
+                const icon = copyBtn.querySelector('i');
+                icon.className = 'bi bi-check-lg';
+                copyBtnText.textContent = 'Copied';
+                
+                setTimeout(() => {
+                    icon.className = 'bi bi-clipboard';
+                    copyBtnText.textContent = 'Copy';
+                }, 3000);
+            } catch (err) {
+                showAlert('Failed to copy URI', 'danger');
+            }
+        });
+
+        function generateQRCode() {
+            const content = contentInput.value.trim();
+
+            generateBtn.disabled = true;
+            generateBtnText.textContent = 'Generating...';
+            generateBtnSpinner.classList.remove('d-none');
+            alertSection.innerHTML = '';
+
+            const baseUrl = window.location.origin;
+            const params = new URLSearchParams({
+                content: content,
+                size: 3,
+                drawBorder: true
+            });
+            const uri = `${baseUrl}/qrcode?${params.toString()}`;
+
+            qrCodeImage.src = uri;
+            endpointUri.value = uri;
+
+            qrCodeImage.onload = () => {
+                const hasContent = contentInput.value.trim().length > 0;
+                generateBtn.disabled = !hasContent;
+                generateBtnText.textContent = 'Generate QR Code';
+                generateBtnSpinner.classList.add('d-none');
+
+                resultSection.classList.add('show');
+            };
+
+            qrCodeImage.onerror = () => {
+                const hasContent = contentInput.value.trim().length > 0;
+                generateBtn.disabled = !hasContent;
+                generateBtnText.textContent = 'Generate QR Code';
+                generateBtnSpinner.classList.add('d-none');
+
+                showAlert('Failed to generate QR Code. Please try again.', 'danger');
+                resultSection.classList.remove('show');
+            };
+        }
+
+        function showAlert(message, type) {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertSection.innerHTML = alertHtml;
+
+            setTimeout(() => {
+                const alert = alertSection.querySelector('.alert');
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+    </script>
 </body>
 </html>
