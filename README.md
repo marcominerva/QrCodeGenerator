@@ -10,15 +10,13 @@ QR Code Generator is a lightweight ASP.NET Core application that provides both a
 
 - **Simple Web Interface**: User-friendly web UI for quick QR code generation
 - **RESTful API**: `/qrcode` endpoint for programmatic QR code generation
-- **Customizable Options**: Configure QR code size and border display
-- **Rate Limiting**: Built-in protection with 50 requests per minute per IP
-- **Output Caching**: Optimized performance with 1-hour cache duration
+- **Customizable Options**, **Rate Limiting** and **Output Caching**
 - **Download Support**: Easily download generated QR codes as PNG images
 
 ## Screenshot
 
-![QR Code Generator Interface](https://github.com/user-attachments/assets/0493583d-0dbc-4d8a-a3ce-6c9a21f6d225)
+![QR Code Generator Interface](https://github.com/user-attachments/assets/c6d0ec2e-302f-46ad-b88a-67d79440ab76)
 
 ## Try It Live
 
-Experience the QR Code Generator in action: **[QR Code Assistant Live Demo](https://qrcodeassistant.azurewebsites.net)**
+Experience the QR Code Generator in action: https://qrcodeassistant.azurewebsites.net
