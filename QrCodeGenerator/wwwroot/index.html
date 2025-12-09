@@ -67,7 +67,8 @@
                        aria-label="Content to encode">
                 <button class="btn btn-primary btn-generate" 
                         type="button" 
-                        id="generateBtn">
+                        id="generateBtn"
+                        disabled>
                     Generate QR Code
                 </button>
             </div>
@@ -150,12 +151,6 @@
         function generateQrCode() {
             const content = contentInput.value.trim();
             
-            // Validate input
-            if (!content) {
-                alert('Please enter text to encode');
-                return;
-            }
-
             // Build the URL
             const qrCodeUrl = buildQrCodeUrl(content);
             
@@ -170,6 +165,14 @@
         }
 
         /**
+         * Updates the generate button state based on input content
+         */
+        function updateButtonState() {
+            const content = contentInput.value.trim();
+            generateBtn.disabled = content.length === 0;
+        }
+
+        /**
          * Downloads the QR code as a PNG file
          */
         async function downloadQrCode() {
@@ -179,6 +182,7 @@
                 // Fetch the image as a blob
                 const response = await fetch(qrCodeUrl);
                 if (!response.ok) {
+                    // Error is caught by the catch block below
                     throw new Error('Failed to fetch QR code');
                 }
                 
@@ -240,9 +244,12 @@
         // Event listeners
         generateBtn.addEventListener('click', generateQrCode);
         
+        // Update button state on input
+        contentInput.addEventListener('input', updateButtonState);
+        
         // Allow Enter key to generate QR code
         contentInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && !generateBtn.disabled) {
                 generateQrCode();
             }
         });
