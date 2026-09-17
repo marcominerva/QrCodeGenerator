@@ -29,8 +29,7 @@ builder.Services.AddRateLimiter(options =>
     {
         if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var window))
         {
-            var response = context.HttpContext.Response;
-            response.Headers.RetryAfter = window.TotalSeconds.ToString();
+            context.HttpContext.Response.Headers.RetryAfter = window.TotalSeconds.ToString();
         }
 
         return ValueTask.CompletedTask;
